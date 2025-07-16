@@ -92,6 +92,17 @@ def search_tag(args, book: NotesBook): # Функція для пошуку но
     results = book.search_by_tag(keyword)
     return "\n".join(str(note) for note in results) if results else "Ой-йой, шось пішло не так 😅 Нотатки з таким тегом не знайдено."
 
+@input_error # Функція для сортування тегів нотаток
+def sort_tags(book: NotesBook):
+    notes = book.get_all_notes()
+    tags = [note.tag.value for note in notes if note.tag and note.tag.value]
+
+    if not tags:
+        return "📦 Упс! Схоже, цей тег десь сховався між рядками коду або випив всю кавусю... Ми його не знайшли 😅"
+
+    sorted_tags = sorted(set(tags), key=str.lower)
+    return "📚 Всі теги у нотатках (в алфавітному порядку):\n" + "\n".join(f"• {tag}" for tag in sorted_tags)
+
 def show_help(): # Функція для виведення довідки з доступними командами
     return """
  Доступні команди Notes:
@@ -105,6 +116,7 @@ def show_help(): # Функція для виведення довідки з д
 • search [частина назви]           – пошук за назвою нотатки
 • search_notes [ключове слово]     – пошук за текстом нотатки
 • search_tag [тег]                 – пошук за тегом нотатки
+• sort_tags                        – показати всі теги, відсортовані за алфавітом
 • back                             – повернутися до стартового меню
 • exit / close                     – завершити роботу
 """
@@ -118,7 +130,7 @@ def main():
         user_input = input("--> ")
         command, args = parse_input(user_input)
 
-        match command:
+        match command: # Використовуємо match-case для обробки команд
             case "add":
                 print(add_note(args, book))
                 book.save() # Зберігаємо нотатки після додавання
@@ -136,10 +148,16 @@ def main():
 
             case "search":
                 print(search_note(args, book))
+
             case "search_notes":
                 print(search_note_text(args, book))
+
             case "search_tag":
                 print(search_tag(args, book))
+
+            case "sort_tags":
+                print(sort_tags(book))
+
             case "all":
                 print(show_notes(book))
             case "back":
