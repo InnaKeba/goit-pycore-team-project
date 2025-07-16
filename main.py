@@ -33,25 +33,36 @@ def delete_note(args, book: NotesBook): # Функція для видаленн
     name = args[0] 
     if book.delete_note(name):  
         return f"Нотатку '{name}' видалено." 
-    return f"Нотатку '{name}' не знайдено."
+    return f"Ой-йой, нотатку '{name}' не знайдено 😢"
 
 @input_error
-def edit_note(args, book: NotesBook): # Функція для редагування нотатки
+def edit_name(args, book: NotesBook): # Функція для редагування назви нотатки
     if len(args) < 2:
-        raise ValueError("Вкажи назву нотатки та новий текст.\nПриклад: edit [назва] [новий текст] [новий тег?]")
+        raise ValueError("Вкажи стару та нову назву нотатки.\nПриклад: edit_name [стара назва] [нова назва]")
+
+    old_name, new_name = args[0], args[1]
+
+    if old_name not in book.data:
+        return f"Ой-йой, нотатку з назвою '{old_name}' не знайдено 😢"
+
+    note = book.data.pop(old_name)
+    note.name.value = new_name
+    book.data[new_name] = note
+    return f"Назву нотатки змінено з '{old_name}' на '{new_name}'."
+
+@input_error
+def edit_text(args, book: NotesBook): # Функція для редагування тексту нотатки
+    if len(args) < 2:
+        raise ValueError("Вкажи назву нотатки та новий текст.\nПриклад: edit_text [назва] [новий текст]")
 
     name = args[0]
-    new_text = " ".join(args[1:-1]) if len(args) > 2 else args[1]
-    new_tag = args[-1] if len(args) > 2 else None
+    new_text = " ".join(args[1:])
 
-    if name in book.data:
-        note = book.data[name]
-        note.text.value = new_text
-        if new_tag:
-            note.tag.value = new_tag
-        return f"Нотатку '{name}' успішно оновлено."
-    else:
-        return f"Нотатку з назвою '{name}' не знайдено."
+    if name not in book.data:
+        return f"Ой-йой, нотатку '{name}' не знайдено 😢"
+
+    book.data[name].text.value = new_text
+    return f"Текст нотатки '{name}' успішно оновлено."
 
 @input_error
 def show_notes(book: NotesBook): # Функція для виведення всіх нотаток
@@ -65,34 +76,35 @@ def show_notes(book: NotesBook): # Функція для виведення вс
 def search_note(args, book: NotesBook): # Функція для пошуку нотатки за назвою
     keyword = " ".join(args)
     results = book.search_by_name(keyword)
-    return "\n".join(str(note) for note in results) if results else "Нотатки не знайдено."
+    return "\n".join(str(note) for note in results) if results else "Ой-йой, шось пішло не так 🤷‍♀️. Нотатки не знайдено."
 
 
 @input_error
 def search_note_text(args, book: NotesBook):    # Функція для пошуку нотатки за текстом
     keyword = " ".join(args)
     results = book.search_by_text(keyword)
-    return "\n".join(str(note) for note in results) if results else "Нотатки не знайдено за текстом."
+    return "\n".join(str(note) for note in results) if results else "Ой-йой, шось пішло не так 🤷‍♀️.Нотатки не знайдено за текстом."
 
 
 @input_error
 def search_tag(args, book: NotesBook): # Функція для пошуку нотатки за тегом
     keyword = args[0]
     results = book.search_by_tag(keyword)
-    return "\n".join(str(note) for note in results) if results else "Нотатки з таким тегом не знайдено."
+    return "\n".join(str(note) for note in results) if results else "Ой-йой, шось пішло не так 🤷‍♀️.Нотатки з таким тегом не знайдено."
 
 def show_help(): # Функція для виведення довідки з доступними командами
     return """
  Доступні команди Notes:
 
+• help                             – показати весь список команд
 • add [назва] [текст] [тег]        – додати нову нотатку
-• edit [назва] [новий текст] [тег] – редагувати текст або тег нотатки
+• edit_name [стара] [нова назва]   – змінити назву нотатки
+• edit_text [назва] [новий текст]  – змінити текст нотатки
 • all                              – показати всі нотатки
 • delete [назва]                   – видалити нотатку за назвою
 • search [частина назви]           – пошук за назвою нотатки
 • search_notes [ключове слово]     – пошук за текстом нотатки
 • search_tag [тег]                 – пошук за тегом нотатки
-• help                             – показати весь список команд
 • back                             – повернутися до стартового меню
 • exit / close                     – завершити роботу
 """
@@ -113,9 +125,15 @@ def main():
             case "delete":
                 print(delete_note(args, book))
                 book.save() # Зберігаємо нотатки після видалення
-            case "edit": # Функція для редагування нотатки
-                print(edit_note(args, book))
-                book.save() # Зберігаємо нотатки після редагування
+        
+            case "edit_name": # Редагування назви нотатки
+                print(edit_name(args, book))
+                book.save()
+
+            case "edit_text": # Редагування тексту нотатки
+                print(edit_text(args, book))
+                book.save()
+
             case "search":
                 print(search_note(args, book))
             case "search_notes":
