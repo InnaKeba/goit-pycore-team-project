@@ -76,7 +76,7 @@ def show_notes(book: NotesBook): # Функція для виведення вс
 def search_note(args, book: NotesBook): # Функція для пошуку нотатки за назвою
     keyword = " ".join(args)
     results = book.search_by_name(keyword)
-    return "\n".join(str(note) for note in results) if results else "Ой-йой, шось пішло не так 😅 Нотатки не знайдено."
+    return "\n".join(str(note) for note in results) if results else "Ой-йой, шось пішло не так 😅all Нотатки не знайдено."
 
 
 @input_error
