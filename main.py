@@ -76,21 +76,21 @@ def show_notes(book: NotesBook): # Функція для виведення вс
 def search_note(args, book: NotesBook): # Функція для пошуку нотатки за назвою
     keyword = " ".join(args)
     results = book.search_by_name(keyword)
-    return "\n".join(str(note) for note in results) if results else "Ой-йой, шось пішло не так 🤷‍♀️. Нотатки не знайдено."
+    return "\n".join(str(note) for note in results) if results else "Ой-йой, шось пішло не так 😅 Нотатки не знайдено."
 
 
 @input_error
 def search_note_text(args, book: NotesBook):    # Функція для пошуку нотатки за текстом
     keyword = " ".join(args)
     results = book.search_by_text(keyword)
-    return "\n".join(str(note) for note in results) if results else "Ой-йой, шось пішло не так 🤷‍♀️.Нотатки не знайдено за текстом."
+    return "\n".join(str(note) for note in results) if results else "Ой-йой, шось пішло не так 😅 Нотатки не знайдено за текстом."
 
 
 @input_error
 def search_tag(args, book: NotesBook): # Функція для пошуку нотатки за тегом
     keyword = args[0]
     results = book.search_by_tag(keyword)
-    return "\n".join(str(note) for note in results) if results else "Ой-йой, шось пішло не так 🤷‍♀️.Нотатки з таким тегом не знайдено."
+    return "\n".join(str(note) for note in results) if results else "Ой-йой, шось пішло не так 😅 Нотатки з таким тегом не знайдено."
 
 def show_help(): # Функція для виведення довідки з доступними командами
     return """
